@@ -1,10 +1,17 @@
+---
+title: "MAAS - Datacenter"
+author: [Marc Sànchez Pifarré, GEINF (UDG-EPS)]
+date: 4 de Desembre de 2019
+subject: "Udg - Eps"
+tags: [MAAS]
+subtitle: "Tutor de la pràctica : Antonio Bueno"
+titlepage: true
+titlepage-color: 4a148c
+titlepage-text-color: FFFFFF
+titlepage-rule-height: 4
+...
 
-<style>
-img {
-    max-width: 50%;
-    margin: auto;
-}
-</style>
+\newpage
 
 # MAAS (Metal as a service)
 
@@ -127,7 +134,7 @@ A l'hora d'afegir màquines al hardware s'han de prendre diferents mesures per p
 
 Configurar l'arrencada en xarxa des de la bios, MAAS ha de poder apagar i encendre les màquines quan ho requereixi per poder tenir un escalat més flexible. 
 
-![PXE Configuration](images/pxe.jpeg)
+![PXE Configuration](images/pxe.jpeg )
 
 Configurar el Wake on lan mitjançant Ctr + S, per poder arrencar-les mitjançant la interfície de xarxa es fa servir el protocol : 
 
@@ -243,7 +250,3 @@ Un cop maas coneix les màquines, té accés a elles i pot manegar-les, hem de f
 - [6] - [BMC - IMPMI 1.5](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface)
 - [7] - [Virish - QEMU](https://en.wikipedia.org/wiki/QEMU)
 - [0] - [Add Nodes](https://maas.io/docs/add-nodes)
-- [] - []()
-- [] - []()
-- [] - []()
-- [] - []()
