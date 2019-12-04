@@ -79,7 +79,7 @@ Maas defineix uns conceptes importants per funcionar.
 
 L'esquema seria quelcom similar a: 
 
-![Rack and region scheme.](https://discourse.maas.io/uploads/default/optimized/1X/5fc8edb2243aa4d4ac6ba7981a7b917fec27c480_2_690x450.png)
+![Rack and region scheme.](https://discourse.maas.io/uploads/default/optimized/1X/5fc8edb2243aa4d4ac6ba7981a7b917fec27c480_2_690x450.png){ width=350px }
 
 **Region**
 
@@ -134,19 +134,19 @@ A l'hora d'afegir màquines al hardware s'han de prendre diferents mesures per p
 
 Configurar l'arrencada en xarxa des de la bios, MAAS ha de poder apagar i encendre les màquines quan ho requereixi per poder tenir un escalat més flexible. 
 
-![PXE Configuration](images/pxe.jpeg )
+![PXE Configuration](images/pxe.jpeg){ width=350px }
 
 Configurar el Wake on lan mitjançant Ctr + S, per poder arrencar-les mitjançant la interfície de xarxa es fa servir el protocol : 
 
-![Acces WOL](images/wol-access.jpeg)
+![Acces WOL](images/wol-access.jpeg){ width=350px }
 
 Activant-lo n'hi ha prou. 
 
-![WOL](images/wol.jpeg)
+![WOL](images/wol.jpeg){ width=350px }
 
 Finalment s'ha de configurar el BMC (IPMI) accedint al seu panell amb Ctr + E. Volem que MAAS (el region controller) utilitzi les altres màquines únicament com a recursos hardware, sense fixar-nos en el sistema operatiu que porten. Degut a que les màquines ho permeten utilitzem IPMI peró es podrien configurar mitjançant VIRISH [7], un sistema de cluster sobre virtualització. Aquest sistema sí que requereix que hi hagi un sistema operatiu a les màquines worker amb el sistema de virtualització QEMU [7] instal·lat.  
 
-![BMC](images/bmc.jpeg)
+![BMC](images/bmc.jpeg){ width=350px }
 
 # Connectivitat 
 
@@ -208,7 +208,7 @@ MAAS dóna accés a la configuració mitjançant la url http://${API_HOST}:5240/
 
 MAAS realitza una exploració de les màquines que pugui haver-hi a les xarxes en les que ell pertany, té les interfícies en mode promiscu per poder detectar màquines noves i per poder resoldre-les. De fet a la finestra de network discovery apareixen aquestes màquines. 
 
-![Network discovery](images/discover.png)
+![Network discovery](images/discover.png){ width=350px }
 
 S'han configurat 3 màquines utiltizant la descripció dels passos de hardware que s'han comentat anteriorment. 
 
@@ -216,17 +216,17 @@ Hem realitzat un filtre per què no surtin totes les de la xarxa externa (totes 
 
 De moment no en tenim cap. 
 
-![MAAS Empty Machines](images/machines.png)
+![MAAS Empty Machines](images/machines.png){ width=350px }
 
 Al botó add hardware de la part superior dreta de la pantalla, si el despleguem podem afegir una machine, la diferència entre machine i chassis es pot trobar a [8], Add Nodes.  Afegim un node : 
 
-![Commissioning](images/commissioning.png)
+![Commissioning](images/commissioning.png){ width=350px }
 
 I tot seguit ens salta a la finestra machines i ens mostra l'estat en el que es troba aquesta màquina. En aquest moment està en estat Commissioning. És a dir està comprovant els recursos de què disposa aquesta màquina worker, tot seguit quan acabi el commission, passarà els testos de hardware, principalment comprova ramm i disc. 
 
 Veiem el llistat de coses que revisa... 
 
-![Commissioning single image](images/commissioning1.png)
+![Commissioning single image](images/commissioning1.png){ width=350px }
 
 Un cop s'ha enllaçat la màquina, ha passat els testos i el commission llavors passa a l'estat de Ready. A partir d'aquí afegirem més màquines al cluster. Utilitzem aquest punt com un checkpoint on a partir d'ara pot ser que les màquines canviin. 
 
@@ -236,7 +236,7 @@ L'estat actual en el que es deixen les màquines és el següent :
 
 Un cop maas coneix les màquines, té accés a elles i pot manegar-les, hem de fer una instal·lació neta de Ubunutu a cada una d'elles per poder tenir un sistema de virtualització. És necessari que per poder virtualitzar cada un dels nodes tingui la capacitat de fer-ho i per tant ens requereix que s'instal·li un Ubuntu. Es pot instal·lar ubuntu de manera automàtica a totes les màquines de cop mitjançant la opció deploy. 
 
-![Add Nodes](images/deploy.png)
+![Add Nodes](images/deploy.png){ width=350px }
 
 
 
