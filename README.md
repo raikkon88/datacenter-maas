@@ -17,7 +17,7 @@ titlepage-rule-height: 4
 
 ## Context
 
-Una empresa ISP de girona (l'anomenarem Fibrix) vol entrar al mercat de l'emmagatzemament web i facilitar als seus clients la possibilitat de poder allotjar-hi les seves pròpies màquines virtuals. De fet aquesta empresa té l'objectiu de unificar el domini de una connexió bona de dades, no només venen el servei de connexió sinó també afegint els serveis de datacenter, concretament la possibilitat que una altre empresa tecnològica del sector pugui contractar amb el mateix ISP un servei de cloud. 
+Una empresa ISP de girona (l'anomenarem Fibrix) vol entrar al mercat de l'emmagatzemament web i facilitar als seus clients la possibilitat de poder allotjar-hi les seves pròpies màquines virtuals. De fet aquesta empresa té l'objectiu d'unificar el domini d'una connexió bona de dades, no només venen el servei de connexió sinó també afegint els serveis de datacenter, concretament la possibilitat que una altre empresa tecnològica del sector pugui contractar amb el mateix ISP un servei de cloud. 
 
 Fibrix ha aconseguit accés a un seguit de màquines físiques provinents de una altre empresa cloud del sector. Aquesta altre empresa ha de mantenir un volum molt gran de feina i ha decidit invertir en Fibrix regalant-li un hardware usat i una mica anticuat. 
 
@@ -232,21 +232,79 @@ Un cop s'ha enllaçat la màquina, ha passat els testos i el commission llavors 
 
 L'estat actual en el que es deixen les màquines és el següent : 
 
-# Virtualització
+# Virtualització - Creació i gestió de Pods.
 
-Un cop maas coneix les màquines, té accés a elles i pot manegar-les, hem de fer una instal·lació neta de Ubunutu a cada una d'elles per poder tenir un sistema de virtualització. És necessari que per poder virtualitzar cada un dels nodes tingui la capacitat de fer-ho i per tant ens requereix que s'instal·li un Ubuntu. Es pot instal·lar ubuntu de manera automàtica a totes les màquines de cop mitjançant la opció deploy. 
+Un cop maas coneix les màquines, té accés a elles i pot manegar-les per arrencar-les o fer un deploy (poasr-hi un ubuntu per exemple), hi ha dos tipus de tractar la virtualització de les màquines peró totes passen per la creació del que s'anomena un POD. Un Pod és un servidor virtual que permet crear màquines a dins. Existeixen dues tecnologies implementades des de MAAS que permeten crear pods. 
+
+- Virsh
+- RSD (Rack Scale Design)
+
+## Rack Scale Design 
+
+En definitiva Rack Scale Design és una tecnologia d'intel que permet la disgregació de hardware dins d'un cluster, generant nodes que tinguin un únic propòsit. Per exemple es poden destinar nodes al manteniment de la xarxa, nodes que s'utilitzin només en termes de computació i memòria i nodes que s'utiltizin només per emmagatzematge. 
+
+![Rack Scale design Scheme](images/rsd-scheme.png){ width=350px }
+
+Rack Scale design ha estat alliberat per Intel actualment està en versió OpenSource. Podeu trobar l'artícle que ho explica a la referència [9]. Rack Scale design estandaritza l'ús de la tecnologia intel per a la pura utilització del hardware. S'utilitza el protocol Redfish [10] que permet l'estandarització de les comunicacions entre servidors mitjançant una interfície REST (HTTP).
+
+Per poder fer servir aquest sistema cal que el hardware suporti l'arrencada per rsd i el manteniment del mateix. El millor resum que he vist que expliquen com funciona RSD es pot trobar a [11].
+
+## Virsh 
+
+Virsh és un sistema de virtualització per software. Permet que els diferents nodes que composen el cluster siguin servidors de màquines virtuals. Cada node incorpora un servidor de virtualització sobre KVM [12]. Aquest sistema ens dóna una limitació, i és que cada servidor virtual només pot treballar amb màquines virtuals limitades al hardware de la mateixa màquina física, veure [13].
+
+Hem de fer una instal·lació neta de Ubunutu a cada una d'elles per poder tenir un sistema de virtualització. És necessari que per poder virtualitzar cada un dels nodes tingui la capacitat de fer-ho i per tant ens requereix que s'instal·li un Ubuntu. Es pot instal·lar ubuntu de manera automàtica a totes les màquines de cop mitjançant la opció deploy. 
 
 ![Add Nodes](images/deploy.png){ width=350px }
+
+En el nostre cas s'han creat dos servidors de virtualització anomenats eager-maggot i wanted-rabbit. 
+
+![PODS](images/pods.png){ width=500px }
+
+Llavors, aquestes màquines que contenen Ubuntu amb un KVM server son màquines totalment manegades per maas? No. Les màquines que formen part del cluster ara son màquines indepentents que s'han instal·lat mitjançant maas peró son totalment accessibles i contenen un sistema operatiu complert. De fet per poder fer el login de les màquines MAAS ens permet afegir una clau pública al nostre usuari. Aquesta clau pública serà automàticament afegida com a clau d'autenticació del node i només qui contingui la clau privada podrà fer login. En el nostre cas, com que tenim un NAT hem generat un parell de claus des del node controlador i hem afegit la clau pública com a clau de l'usuari. 
+
+D'aquesta manera quan aquest usuari faci el deploy sobre una màquina i instal·li un ubuntu podrà directament fer login amb la seva clau privada. Per connectar-nos a la màquina que s'acaba d'instal·lar doncs utiltizem la instrucció : 
+
+```
+ssh ubuntu@192.168.1.24 -i ~/.ssh/id_rsa
+```
+
+Per defecte, l'usuari que es crea com usuari de la màquina conté el nom de ubuntu. Amb aquest és amb el que podem iniciar sessió. Si hem marcat la casella que permet fer un servidor de virtualització quan hem fet el deploy també tindrem accés al servidor de virtualització mitjanḉant qemu+ssh. Per exemple la següent instrucció: 
+
+```
+$ virsh -c qemu+ssh://ubuntu@192.168.1.24/system list --all
+ Id    Name                           State
+----------------------------------------------------
+
+```
+
+En aquest moment veiem que no hi ha cap màquina virtual creada dins del servidor de virtualització. Per crear una màquina virtual, simplement cal entrar dins del pod i prèmer el botó take action -> compose. 
+
+![new virtual machine](images/newVM.png){ width=500px }
+
+El sistema virtual no ens permet crear una màquina virtual que tingui més hardware que la màquina host, peró sí que ens permet crear més d'una màquina amb menys hardware que sumant el global continguin més hardware que el host, és a dir, podria perfectament crear : 3 màquines de 1 core cada una. Aquesta acció es permet des de la configuració del POD. Se li aplica un multiplicador tal i com s'explica a [14]. Òbviament el que no podem és encendre-les totes a la vegada. 
+
+En aquest cas s'ha creat una màquina virtual amb 1Gb de RAMM, 1 nucli i 20Gb de ramm. Un cop creada ens apareix a la llista de machines peró amb un tag diferent a les reals. 
+
+![New virtual machine added](images/loved.png){ width=500px }
+
+
 
 
 
 # Referències 
 
-- [1] - [Dell poweredge 860](https://www.dell.com/downloads/emea/products/pedge/es/pe860_spec_sheet.pdf)
-- [2] - [BMC](https://docs.bmc.com/docs/bcm120/introducing-remote-management-570589616.html)
-- [3] - [IPMI](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface)
-- [4] - [MAAS](https://maas.io)
-- [5] - [MAAS Installation](https://maas.io/docs/install-from-packages)
-- [6] - [BMC - IMPMI 1.5](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface)
-- [7] - [Virish - QEMU](https://en.wikipedia.org/wiki/QEMU)
-- [0] - [Add Nodes](https://maas.io/docs/add-nodes)
+- [1]  - [Dell poweredge 860](https://www.dell.com/downloads/emea/products/pedge/es/pe860_spec_sheet.pdf)
+- [2]  - [BMC](https://docs.bmc.com/docs/bcm120/introducing-remote-management-570589616.html)
+- [3]  - [IPMI](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface)
+- [4]  - [MAAS](https://maas.io)
+- [5]  - [MAAS Installation](https://maas.io/docs/install-from-packages)
+- [6]  - [BMC - IMPMI 1.5](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface)
+- [7]  - [Virish - QEMU](https://en.wikipedia.org/wiki/QEMU)
+- [8]  - [Add Nodes](https://maas.io/docs/add-nodes)
+- [9]  - [Intel finally releases its Rack Scale Design to Open Source](https://www.datacenterknowledge.com/archives/2016/07/29/intel-finally-releases-rack-scale-design-open-source)
+- [10] - [Redfish wikipedia](https://en.wikipedia.org/wiki/Redfish_(specification))
+- [11] - [Rack Scale Design: Composable Hardware][https://wiki.openstack.org/wiki/Valence#Rack_Scale_Design:_Composable_Hardware]
+- [12] - [KVM Installation](https://help.ubuntu.com/community/KVM/Installation)
+- [13] - [LibVirt -> tools -> virsh.pod](https://github.com/libvirt/libvirt/blob/master/tools/virsh.pod)
+- [14] - [Overcommit resources](https://maas.io/docs/manage-composable-machines#heading--overcommit-resources)
