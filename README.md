@@ -109,9 +109,9 @@ Totes les màquines físiques dels rack controllers es poden agrupar per generar
 
 En aquesta capa encara estem treballant amb màquines físiques i el concepte de virtualització encara no ha aparegut. 
 
-**Pool**
+**Pod**
 
-Aquí apareix el concepte de virtualització, i és que, totes les màquines físiques que gestiona maas acaben component el que s'anomena una piscina de recursos. Dins d'aquesta piscina és on es poden generar màquines virtuals. 
+Aquí apareix el concepte de virtualització, i és que, totes les màquines físiques que gestiona maas acaben component el que s'anomena un POD. Dins d'aquest pod és on es poden generar màquines virtuals. La composició i creació dels pod es pot fer o bé amb RSD (Rack Scale Design) o bé amb Virsh (Virtualització). Hi ha un apartat en aquest document on està més detallat.
 
 # Hardware
 
@@ -232,7 +232,7 @@ Un cop s'ha enllaçat la màquina, ha passat els testos i el commission llavors 
 
 L'estat actual en el que es deixen les màquines és el següent : 
 
-# Virtualització - Creació i gestió de Pods.
+# Virtualització - Pods i màquines virtuals.
 
 Un cop maas coneix les màquines, té accés a elles i pot manegar-les per arrencar-les o fer un deploy (poasr-hi un ubuntu per exemple), hi ha dos tipus de tractar la virtualització de les màquines peró totes passen per la creació del que s'anomena un POD. Un Pod és un servidor virtual que permet crear màquines a dins. Existeixen dues tecnologies implementades des de MAAS que permeten crear pods. 
 
@@ -278,6 +278,8 @@ $ virsh -c qemu+ssh://ubuntu@192.168.1.24/system list --all
 
 ```
 
+## Creació de màquines virtuals
+
 En aquest moment veiem que no hi ha cap màquina virtual creada dins del servidor de virtualització. Per crear una màquina virtual, simplement cal entrar dins del pod i prèmer el botó take action -> compose. 
 
 ![new virtual machine](images/newVM.png){ width=500px }
@@ -288,9 +290,41 @@ En aquest cas s'ha creat una màquina virtual amb 1Gb de RAMM, 1 nucli i 20Gb de
 
 ![New virtual machine added](images/loved.png){ width=500px }
 
+A partir d'aquest moment, aquesta màquina forma part del cluster de màquines controlables per el mateix MAAS peró en comptes de ser una màquina real és una màquina virtual. Si fem la mateixa actució que amb les altres ara per exemple hi podem fer un deploy d'una imatge de CentOS 7. 
 
+![Deploy CentOS](images/deploy-centos.png){ width=500px }
 
+Un cop s'hagi realitzat el deploy, l'accés a aquesta màquina serà de la mateixa manera que s'ha realitzat amb les altres. Mitjançant la clau privada de l'usuari bcds en aquest cas, ja que aquest usuari hi té pujada una clau pública. 
 
+Podem veure la màquina virtual creada entre les difrerents màquines físiques. 
+
+![Deploy CentOS](images/centos.png){ width=500px }
+
+# Des del punt de vista de l'ISP. 
+
+I amb tot aixó ja podriem assolir l'objectiu, faltaria alguna com es detallarà a continuació, peró en general la funcionalitat ja estaria resolta. 
+
+## Creació dinàmica de màquines virtuals per un usuari
+
+El mateix ISP ara està preparat per subministrar accés a usuaris a una infraestructura on es poden crear màquines virtuals. Es pot assignar Pods a un usuari que no sigui administrador peró que tingui el control de les seves màquines virtuals de la mateixa manera que es pot implementar una interfície gràfica que permeti la gestió de les accions de l'usuari. 
+
+## Accés mitjançant API
+
+Per accedir a realitzar accions des d'una interfície d'usuari client es pot fer a partir de la API key que té assignada cada usuari. Si es genera un usuari nou, juntament se li genera una API key per poder realitzar crides a la API Web del MAAS. Aquesta API key es pot configurar mitjançant la secció preferències de l'usuari. 
+
+## DNS
+
+Com a DNS el que implementa directament el region controller és un DNS local. És capaç de resoldre les seves màquines i cada cop que es genera una màquina nova també afegeix un registre A al DNS local. A partir d'aquest moment s'ha de configurar el DNS per què pugui resoldre a l'exterior. 
+
+Un altre punt important és la propagació dels subdominis al llarg d'internet. L'ISP requereix de la creació de registres dns per cada màquina que convisquin tots sota la mateixa IP. El punt que falta per implementar seria el que s'anomena servei de Meshing. Que simplement gestiona les peticions que reben des de la WAN i les redirigeix cap a la LAN resolent de manera local quina és la màquina que té associada aquest dns. Podem veure com implementa maas el networking a la referència [15].
+
+# Conclusions
+
+A nivell d'aprenentatge aquest treball incorpora knowledge basat en adminsitració de sistemes, autenticació mitjançant claus públiques/privades, xarxes, patrons de disseny i virtualització. A part de tot el coneixement basat en arquitectura d'arrencades del sistema. 
+
+En general he aprés com configurar arrencades del sistema, com fer arrencades per xarxa, wake on lan, gestió de hardware de màquines mitjançant BMC i composició de l'arquitectura client servidor d'un sistema virtual basat en KVM. 
+
+El punt d'implementació més interessant pel que crec que es podria seguir investigant és la implementació del cluster mitjançant la eina OpenStack [16]. Open stack permet la clusterització i creació de datacenters orientats a diferents tipus de infraestructures. En realitat es basa a IAAS (Infraestructure as a service). Es pot basar sobre maas i es pot muntar a partir d'aquest mateix document, la implementació de openstack pot comportar l'us de hardware especialitzat que tingui les opcions per poder construïr un cluster amb virtualització aplicada a nivell de infraestructura i no de hardware directament. 
 
 # Referències 
 
@@ -308,3 +342,5 @@ En aquest cas s'ha creat una màquina virtual amb 1Gb de RAMM, 1 nucli i 20Gb de
 - [12] - [KVM Installation](https://help.ubuntu.com/community/KVM/Installation)
 - [13] - [LibVirt -> tools -> virsh.pod](https://github.com/libvirt/libvirt/blob/master/tools/virsh.pod)
 - [14] - [Overcommit resources](https://maas.io/docs/manage-composable-machines#heading--overcommit-resources)
+- [15] - [Maas networking](https://maas.io/docs/networking)
+- [16] - [OpenStack webpage](https://www.openstack.org/)
