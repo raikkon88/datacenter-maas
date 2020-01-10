@@ -97,7 +97,7 @@ Se n'ocupa de serveis com per exemple :
 
 - El wake on lan de les seves màquines. 
 - L'arrencada per PXE. 
-- Gestiona els serveis BMC amb IPMI o Virish. 
+- Gestiona els serveis BMC amb IPMI o Virsh. 
 - Gestiona la virtualització entre les diferents màquines. 
 - Se n'encarrega del dhcp de la xarxa i manté la subxarxa. 
 
@@ -144,7 +144,7 @@ Activant-lo n'hi ha prou.
 
 ![WOL](images/wol.jpeg){ width=350px }
 
-Finalment s'ha de configurar el BMC (IPMI) accedint al seu panell amb Ctr + E. Volem que MAAS (el region controller) utilitzi les altres màquines únicament com a recursos hardware, sense fixar-nos en el sistema operatiu que porten. Degut a que les màquines ho permeten utilitzem IPMI peró es podrien configurar mitjançant VIRISH [7], un sistema de cluster sobre virtualització. Aquest sistema sí que requereix que hi hagi un sistema operatiu a les màquines worker amb el sistema de virtualització QEMU [7] instal·lat.  
+Finalment s'ha de configurar el BMC (IPMI) accedint al seu panell amb Ctr + E. Volem que MAAS (el region controller) utilitzi les altres màquines únicament com a recursos hardware, sense fixar-nos en el sistema operatiu que porten. Degut a que les màquines ho permeten utilitzem IPMI peró es podrien configurar mitjançant VIRSH [7], un sistema de cluster sobre virtualització. Aquest sistema sí que requereix que hi hagi un sistema operatiu a les màquines worker amb el sistema de virtualització QEMU [7] instal·lat.  
 
 ![BMC](images/bmc.jpeg){ width=350px }
 
@@ -300,6 +300,8 @@ Podem veure la màquina virtual creada entre les difrerents màquines físiques.
 
 ![Deploy CentOS](images/centos.png){ width=500px }
 
+Per defecte l'accés a la màquina virtual és mitjanḉant SSH, per defecte maas quan fa el deploy, el fa directament amb la clau ssh pública de l'usuari i li instal·la el ssh server. Així un cop finalitzat l'usuari podria accedir a la màquina directament com ho fan proveïdors de serveis com digital ocean. 
+
 # Des del punt de vista de l'ISP. 
 
 I amb tot aixó ja podriem assolir l'objectiu, faltaria alguna com es detallarà a continuació, peró en general la funcionalitat ja estaria resolta. 
@@ -334,7 +336,7 @@ El punt d'implementació més interessant pel que crec que es podria seguir inve
 - [4]  - [MAAS](https://maas.io)
 - [5]  - [MAAS Installation](https://maas.io/docs/install-from-packages)
 - [6]  - [BMC - IMPMI 1.5](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface)
-- [7]  - [Virish - QEMU](https://en.wikipedia.org/wiki/QEMU)
+- [7]  - [Virsh - QEMU](https://en.wikipedia.org/wiki/QEMU)
 - [8]  - [Add Nodes](https://maas.io/docs/add-nodes)
 - [9]  - [Intel finally releases its Rack Scale Design to Open Source](https://www.datacenterknowledge.com/archives/2016/07/29/intel-finally-releases-rack-scale-design-open-source)
 - [10] - [Redfish wikipedia](https://en.wikipedia.org/wiki/Redfish_(specification))
