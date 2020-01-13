@@ -60,7 +60,7 @@ Tanmateix el producte que es vol vendre als clients són màquines senceres, pod
 
 **Opció 3**
 
-El muntatge d'un cluster, capaç de tenir la flexibilitat d'afegir i treure màquienes físiques per poder-lo fer escalable. Ens ha de permetre la creació de màquines virtuals mitjançant imatges i el desplegament d'aquestes. Tanmateix ens ha de subministrar eines per a la comprovació de l'estat del hardware de les màquines físiques. 
+El muntatge d'un clúster, capaç de tenir la flexibilitat d'afegir i treure màquienes físiques per poder-lo fer escalable. Ens ha de permetre la creació de màquines virtuals mitjançant imatges i el desplegament d'aquestes. Tanmateix ens ha de subministrar eines per a la comprovació de l'estat del hardware de les màquines físiques. 
 
 Aquí entra [MAAS](https://maas.io) [4].
 
@@ -117,7 +117,7 @@ Aquí apareix el concepte de virtualització, i és que, totes les màquines fí
 
 Com a hardware tenim un seguit de servidors DELL POWEREDGE 860 amb un dual Core i Majoritàriament 4Gb de RAMM. 
 
-El hardware de què disposem està preparat per treballar en mode cluster, definirem el mode cluster com els pc's que disposen de : 
+El hardware de què disposem està preparat per treballar en mode clúster, definirem el mode clúster com els pc's que disposen de : 
 
 - WAKE ON LAN 
 - BMC Support
@@ -144,7 +144,7 @@ Activant-lo n'hi ha prou.
 
 ![WOL](images/wol.jpeg){ width=350px }
 
-Finalment s'ha de configurar el BMC (IPMI) accedint al seu panell amb Ctr + E. Volem que MAAS (el region controller) utilitzi les altres màquines únicament com a recursos hardware, sense fixar-nos en el sistema operatiu que porten. Com que les màquines ho permeten utilitzem IPMI però es podrien configurar mitjançant VIRSH [7], un sistema de cluster sobre virtualització. Aquest sistema sí que requereix que hi hagi un sistema operatiu a les màquines worker amb el sistema de virtualització QEMU [7] instal·lat.  
+Finalment s'ha de configurar el BMC (IPMI) accedint al seu panell amb Ctr + E. Volem que MAAS (el region controller) utilitzi les altres màquines únicament com a recursos hardware, sense fixar-nos en el sistema operatiu que porten. Com que les màquines ho permeten utilitzem IPMI però es podrien configurar mitjançant VIRSH [7], un sistema de clúster sobre virtualització. Aquest sistema sí que requereix que hi hagi un sistema operatiu a les màquines worker amb el sistema de virtualització QEMU [7] instal·lat.  
 
 ![BMC](images/bmc.jpeg){ width=350px }
 
@@ -204,7 +204,7 @@ Podem inicialitzar el password mitjançant aquesta mateixa instrucció passant-l
 
 MAAS dóna accés a la configuració mitjançant la url http://${API_HOST}:5240/MAAS on API_HOST és l'adreça de la màquina. Un cop en aquesta url iniciem sessió amb l'usuari i el password que s'han inicialitzat anteriorment. 
 
-# Muntar el cluster mitjançant UI
+# Muntar el clúster mitjançant UI
 
 MAAS realitza una exploració de les màquines que pugui haver-hi a les xarxes en les quals ell pertany, té les interfícies en mode promiscu per poder detectar màquines noves i per poder resoldre-les. De fet a la finestra de network discovery apareixen aquestes màquines. 
 
@@ -212,7 +212,7 @@ MAAS realitza una exploració de les màquines que pugui haver-hi a les xarxes e
 
 S'han configurat 3 màquines utiltizant la descripció dels passos de hardware que s'han comentat anteriorment. 
 
-Hem realitzat un filtre perquè no surtin totes les de la xarxa externa (totes les màquines de la xarxa 84.88.154.0/23). Si despleguem una d'aquestes màquines mitjançant la fletxa descendent podem veure la seva adreça mac, que necessitarem per afegir-les al cluster com a machines.
+Hem realitzat un filtre perquè no surtin totes les de la xarxa externa (totes les màquines de la xarxa 84.88.154.0/23). Si despleguem una d'aquestes màquines mitjançant la fletxa descendent podem veure la seva adreça mac, que necessitarem per afegir-les al clúster com a machines.
 
 De moment no en tenim cap. 
 
@@ -228,7 +228,7 @@ Veiem el llistat de coses que revisa...
 
 ![Commissioning single image](images/commissioning1.png){ width=350px }
 
-Un cop s'ha enllaçat la màquina, ha passat els testos i el commission llavors passa a l'estat de Ready. A partir d'aquí afegirem més màquines al cluster. Utilitzem aquest punt com un checkpoint on a partir d'ara pot ser que les màquines canviïn. 
+Un cop s'ha enllaçat la màquina, ha passat els testos i el commission llavors passa a l'estat de Ready. A partir d'aquí afegirem més màquines al clúster. Utilitzem aquest punt com un checkpoint on a partir d'ara pot ser que les màquines canviïn. 
 
 L'estat actual en el qual es deixen les màquines és el següent : 
 
@@ -241,7 +241,7 @@ Un cop maas coneix les màquines, té accés a elles i pot manegar-les per arren
 
 ## Rack Scale Design 
 
-En definitiva Rack Scale Design és una tecnologia d'intel que permet la disgregació de hardware dins d'un cluster, generant nodes que tinguin un únic propòsit. Per exemple es poden destinar nodes al manteniment de la xarxa, nodes que s'utilitzin només en termes de computació i memòria i nodes que s'utiltizin només per emmagatzematge. 
+En definitiva Rack Scale Design és una tecnologia d'intel que permet la disgregació de hardware dins d'un clúster, generant nodes que tinguin un únic propòsit. Per exemple es poden destinar nodes al manteniment de la xarxa, nodes que s'utilitzin només en termes de computació i memòria i nodes que s'utiltizin només per emmagatzematge. 
 
 ![Rack Scale design Scheme](images/rsd-scheme.png){ width=350px }
 
@@ -251,7 +251,7 @@ Per poder fer servir aquest sistema cal que el hardware suporti l'arrencada per 
 
 ## Virsh 
 
-Virsh és un sistema de virtualització per software. Permet que els diferents nodes que componen el cluster siguin servidors de màquines virtuals. Cada node incorpora un servidor de virtualització sobre KVM [12]. Aquest sistema ens dóna una limitació, i és que cada servidor virtual només pot treballar amb màquines virtuals limitades al hardware de la mateixa màquina física, veure [13].
+Virsh és un sistema de virtualització per software. Permet que els diferents nodes que componen el clúster siguin servidors de màquines virtuals. Cada node incorpora un servidor de virtualització sobre KVM [12]. Aquest sistema ens dóna una limitació, i és que cada servidor virtual només pot treballar amb màquines virtuals limitades al hardware de la mateixa màquina física, veure [13].
 
 Hem de fer una instal·lació neta de Ubunutu a cada una d'elles per poder tenir un sistema de virtualització. És necessari que per poder virtualitzar cada un dels nodes tingui la capacitat de fer-ho i per tant ens requereix que s'instal·li un Ubuntu. Es pot instal·lar Ubuntu de manera automàtica a totes les màquines de cop mitjançant l'opció deploy. 
 
@@ -261,7 +261,7 @@ En el nostre cas s'han creat dos servidors de virtualització anomenats eager-ma
 
 ![PODS](images/pods.png){ width=500px }
 
-Llavors, aquestes màquines que contenen Ubuntu amb un KVM server són màquines totalment manegades per maas? No. Les màquines que formen part del cluster ara són màquines independents que s'han instal·lat mitjançant maas però són totalment accessibles i contenen un sistema operatiu complet. De fet per poder fer el login de les màquines MAAS ens permet afegir una clau pública al nostre usuari. Aquesta clau pública serà automàticament afegida com a clau d'autenticació del node i només qui contingui la clau privada podrà fer login. En el nostre cas, com que tenim un NAT hem generat un parell de claus des del node controlador i hem afegit la clau pública com a clau de l'usuari. 
+Llavors, aquestes màquines que contenen Ubuntu amb un KVM server són màquines totalment manegades per maas? No. Les màquines que formen part del clúster ara són màquines independents que s'han instal·lat mitjançant maas però són totalment accessibles i contenen un sistema operatiu complet. De fet per poder fer el login de les màquines MAAS ens permet afegir una clau pública al nostre usuari. Aquesta clau pública serà automàticament afegida com a clau d'autenticació del node i només qui contingui la clau privada podrà fer login. En el nostre cas, com que tenim un NAT hem generat un parell de claus des del node controlador i hem afegit la clau pública com a clau de l'usuari. 
 
 D'aquesta manera quan aquest usuari faci el deploy sobre una màquina i instal·li un Ubuntu podrà directament fer login amb la seva clau privada. Per connectar-nos a la màquina que s'acaba d'instal·lar doncs utilitzem la instrucció: 
 
@@ -284,27 +284,27 @@ En aquest moment veiem que no hi ha cap màquina virtual creada dins del servido
 
 ![new virtual machine](images/newVM.png){ width=500px }
 
-El sistema virtual no ens permet crear una màquina virtual que tingui més hardware que la màquina host, però sí que ens permet crear més d'una màquina amb menys hardware que sumant el global continguin més hardware que el host, és a dir, podria perfectament crear : 3 màquines de 1 core cada una. Aquesta acció es permet des de la configuració del POD. Se li aplica un multiplicador tal i com s'explica a [14]. Òbviament el que no podem és encendre-les totes a la vegada. 
+El sistema virtual no ens permet crear una màquina virtual que tingui més hardware que la màquina host, però sí que ens permet crear més d'una màquina amb menys hardware que sumant el global continguin més hardware que el host, és a dir, podria perfectament crear : 3 màquines d'1 core cada una. Aquesta acció es permet des de la configuració del POD. Se li aplica un multiplicador tal com s'explica a [14]. Òbviament el que no podem és encendre-les totes a la vegada. 
 
-En aquest cas s'ha creat una màquina virtual amb 1Gb de RAMM, 1 nucli i 20Gb de ramm. Un cop creada ens apareix a la llista de machines però amb un tag diferent a les reals. 
+En aquest cas s'ha creat una màquina virtual amb 1Gb de RAMM, 1 nucli i 20Gb de ramm. Un cop creada ens apareix a la llista de machines però amb un tag diferent de les reals. 
 
 ![New virtual machine added](images/loved.png){ width=500px }
 
-A partir d'aquest moment, aquesta màquina forma part del cluster de màquines controlables per el mateix MAAS però en comptes de ser una màquina real és una màquina virtual. Si fem la mateixa actució que amb les altres ara per exemple hi podem fer un deploy d'una imatge de CentOS 7. 
+A partir d'aquest moment, aquesta màquina forma part del clúster de màquines controlables pel mateix MAAS però en comptes de ser una màquina real és una màquina virtual. Si fem la mateixa actuació que amb les altres ara per exemple hi podem fer un deploy d'una imatge de CentOS 7. 
 
 ![Deploy CentOS](images/deploy-centos.png){ width=500px }
 
 Un cop s'hagi realitzat el deploy, l'accés a aquesta màquina serà de la mateixa manera que s'ha realitzat amb les altres. Mitjançant la clau privada de l'usuari bcds en aquest cas, ja que aquest usuari hi té pujada una clau pública. 
 
-Podem veure la màquina virtual creada entre les difrerents màquines físiques. 
+Podem veure la màquina virtual creada entre les diferents màquines físiques. 
 
 ![Deploy CentOS](images/centos.png){ width=500px }
 
-Per defecte l'accés a la màquina virtual és mitjanḉant SSH, per defecte maas quan fa el deploy, el fa directament amb la clau ssh pública de l'usuari i li instal·la el ssh server. Així un cop finalitzat l'usuari podria accedir a la màquina directament com ho fan proveïdors de serveis com digital ocean. 
+Per defecte l'accés a la màquina virtual és mitjançant SSH, per defecte maas quan fa el deploy, el fa directament amb la clau ssh pública de l'usuari i li instal·la el ssh server. Així un cop finalitzat l'usuari podria accedir a la màquina directament com ho fan proveïdors de serveis com digital ocean. 
 
 # Des del punt de vista de l'ISP. 
 
-I amb tot això ja podriem assolir l'objectiu, faltaria alguna com es detallarà a continuació, però en general la funcionalitat ja estaria resolta. 
+I amb tot això ja podríem assolir l'objectiu, faltaria alguna com es detallarà a continuació, però en general la funcionalitat ja estaria resolta. 
 
 ## Creació dinàmica de màquines virtuals per un usuari
 
@@ -312,13 +312,13 @@ El mateix ISP ara està preparat per subministrar accés a usuaris a una infraes
 
 ## Accés mitjançant API
 
-Per accedir a realitzar accions des d'una interfície d'usuari client es pot fer a partir de la API key que té assignada cada usuari. Si es genera un usuari nou, juntament se li genera una API key per poder realitzar crides a la API Web del MAAS. Aquesta API key es pot configurar mitjançant la secció preferències de l'usuari. 
+Per accedir a realitzar accions des d'una interfície d'usuari client es pot fer a partir de l'API key que té assignada cada usuari. Si es genera un usuari nou, juntament se li genera una API key per poder realitzar crides a l'API Web del MAAS. Aquesta API key es pot configurar mitjançant la secció preferències de l'usuari. 
 
 ## DNS
 
-Com a DNS el que implementa directament el region controller és un DNS local. És capaç de resoldre les seves màquines i cada cop que es genera una màquina nova també afegeix un registre A al DNS local. A partir d'aquest moment s'ha de configurar el DNS per què pugui resoldre a l'exterior. 
+Com a DNS el que implementa directament el region controller és un DNS local. És capaç de resoldre les seves màquines i cada cop que es genera una màquina nova també afegeix un registre A al DNS local. A partir d'aquest moment s'ha de configurar el DNS perquè pugui resoldre a l'exterior. 
 
-Un altre punt important és la propagació dels subdominis al llarg d'internet. L'ISP requereix de la creació de registres dns per cada màquina que convisquin tots sota la mateixa IP. El punt que falta per implementar seria el que s'anomena servei de Meshing. Que simplement gestiona les peticions que reben des de la WAN i les redirigeix cap a la LAN resolent de manera local quina és la màquina que té associada aquest dns. Podem veure com implementa maas el networking a la referència [15].
+Un altre punt important és la propagació dels subdominis al llarg d'internet. L'ISP requereix la creació de registres dns per cada màquina que convisquin tots sota la mateixa IP. El punt que falta per implementar seria el que s'anomena servei de Meshing. Que simplement gestiona les peticions que reben des de la WAN i les redirigeix cap a la LAN resolent de manera local quina és la màquina que té associada aquest dns. Podem veure com implementa maas el networking a la referència [15].
 
 # Conclusions
 
@@ -326,7 +326,7 @@ A nivell d'aprenentatge aquest treball incorpora knowledge basat en adminsitraci
 
 En general he aprés com configurar arrencades del sistema, com fer arrencades per xarxa, wake on lan, gestió de hardware de màquines mitjançant BMC i composició de l'arquitectura client servidor d'un sistema virtual basat en KVM. 
 
-El punt d'implementació més interessant pel que crec que es podria seguir investigant és la implementació del cluster mitjançant la eina OpenStack [16]. Open stack permet la clusterització i creació de datacenters orientats a diferents tipus de infraestructures. En realitat es basa a IAAS (Infraestructure as a service). Es pot basar sobre maas i es pot muntar a partir d'aquest mateix document, la implementació de openstack pot comportar l'us de hardware especialitzat que tingui les opcions per poder construïr un cluster amb virtualització aplicada a nivell de infraestructura i no de hardware directament. 
+El punt d'implementació més interessant pel que crec que es podria seguir investigant és la implementació del clúster mitjançant l'eina OpenStack [16]. Open stack permet la clústerització i creació de datacenters orientats a diferents tipus d'infraestructures. En realitat es basa a IAAS (Infraestructure as a service). Es pot basar sobre maas i es pot muntar a partir d'aquest mateix document, la implementació d'openstack pot comportar l'ús de hardware especialitzat que tingui les opcions per poder construir un clúster amb virtualització aplicada a nivell d'infraestructura i no de hardware directament. 
 
 # Referències 
 
